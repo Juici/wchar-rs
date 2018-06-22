@@ -1,7 +1,7 @@
 # wchar-rs &thinsp; [![Travis build status]][travis] [![Appveyor build status]][appveyor] [![Latest Version]][crates.io] [![API docs]][docs.rs]
 
-[Travis build status]: https://api.travis-ci.org/Juici/wchar.svg?branch=master
-[travis]: https://travis-ci.org/Juici/wchar
+[Travis build status]: https://travis-ci.com/Juici/wchar-rs.svg?branch=master
+[travis]: https://travis-ci.com/Juici/wchar-rs
 
 [Appveyor build status]: https://ci.appveyor.com/api/projects/status/github/Juici/wchar-rs?svg=true&branch=master
 [appveyor]: https://ci.appveyor.com/project/Juici/wchar-rs
