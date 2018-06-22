@@ -1,0 +1,23 @@
+environment:
+  matrix:
+  # Nightly channel
+  - TARGET: i686-pc-windows-gnu
+  - TARGET: i686-pc-windows-msvc
+  - TARGET: x86_64-pc-windows-gnu
+  - TARGET: x86_64-pc-windows-msvc
+
+# Install Rust and Cargo
+# (Based on from https://github.com/rust-lang/libc/blob/master/appveyor.yml)
+install:
+  - ps: Start-FileDownload "https://static.rust-lang.org/dist/rust-nightly-${env:TARGET}.exe"
+  - rust-nightly-%TARGET%.exe /VERYSILENT /NORESTART /DIR="C:\Program Files (x86)\Rust"
+  - SET PATH=%PATH%;C:\Program Files (x86)\Rust\bin
+  - SET PATH=%PATH%;C:\MinGW\bin
+  - rustc -V
+  - cargo -V
+
+build: false
+
+test_script:
+  - cargo build --verbose
+  - cargo test

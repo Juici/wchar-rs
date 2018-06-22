@@ -1,6 +1,6 @@
 [package]
 name = "wchar"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Juici <juicy66173@gmail.com>"]
 description = "A procedural macro for compile time UTF-16 strings"
 
