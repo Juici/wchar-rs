@@ -1,0 +1,21 @@
+sudo: false
+language: rust
+cache: cargo
+
+rust:
+  - nightly
+
+script:
+  - cargo build
+
+matrix:
+  include:
+    - rust: nightly
+      env: ROLE=test
+      script:
+        - cargo test --all-features --release
+    - rust: nightly
+      env: ROLE=clippy
+      script:
+        - cargo install clippy --debug --force || exit
+        - cargo clippy --all-features -- -Dclippy
