@@ -20,7 +20,7 @@
 //! // Equivalent to `#define RUST L"Rust"` in C.
 //! const RUST: &[u16] = wch!("Rust\0"); // C strings are null-terminated.
 //!
-//! assert_eq!(WIDE_RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
+//! assert_eq!(RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
 //! ```
 
 #![feature(proc_macro)]
