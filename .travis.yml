@@ -14,8 +14,10 @@ matrix:
       env: ROLE=test
       script:
         - cargo test --all-features --release
+  allow_failures:
     - rust: nightly
       env: ROLE=clippy
       script:
         - cargo install clippy --debug --force || exit
         - cargo clippy --all-features -- -Dclippy
+  fast_finish: true
