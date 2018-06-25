@@ -12,7 +12,7 @@
 [API docs]: https://docs.rs/wchar/badge.svg
 [docs.rs]: https://docs.rs/wchar
 
-**A procedural macro for compile time UTF-16 strings.**
+**Procedural macros for compile time UTF-16 wide strings.**
 
-This crate introduces a macro to create UTF-16 wide strings at compiler time,
+This crate introduces two macros to create UTF-16 wide strings at compiler time,
 like the `L` literal in C.
