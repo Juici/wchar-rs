@@ -22,7 +22,6 @@ appveyor = { repository = "Juici/wchar-rs" }
 travis-ci = { repository = "Juici/wchar-rs" }
 maintenance = { status = "passively-maintained" }
 
-
 [dependencies]
 wchar-macro = { path = "../wchar-rs-macro" }
 proc-macro-hack = "0.5"
