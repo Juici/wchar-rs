@@ -1,5 +1,3 @@
-#![feature(proc_macro, proc_macro_non_items)]
-
 extern crate wchar;
 
 use wchar::{wch, wch_c};
