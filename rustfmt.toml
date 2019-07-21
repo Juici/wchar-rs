@@ -16,3 +16,5 @@ blank_lines_lower_bound = 0
 merge_derives = true
 use_try_shorthand = true
 unstable_features = true
+
+edition = "2018"
