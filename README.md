@@ -1,4 +1,4 @@
-# wchar-rs &thinsp; [![Travis build status]][travis] [![Appveyor build status]][appveyor] [![Latest Version]][crates.io] [![API docs]][docs.rs]
+# wchar-rs &thinsp; [![Travis build status]][travis] [![Latest Version]][crates.io] [![API docs]][docs.rs]
 
 [Travis build status]: https://travis-ci.com/Juici/wchar-rs.svg?branch=master
 [travis]: https://travis-ci.com/Juici/wchar-rs

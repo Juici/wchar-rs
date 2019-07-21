@@ -15,7 +15,6 @@ keywords = ["wide", "string", "wchar", "utf16"]
 categories = ["text-processing"]
 
 [badges]
-appveyor = { repository = "Juici/wchar-rs" }
 travis-ci = { repository = "Juici/wchar-rs" }
 maintenance = { status = "passively-maintained" }
 
