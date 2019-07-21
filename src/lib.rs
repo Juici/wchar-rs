@@ -60,7 +60,7 @@ use proc_macro_hack::proc_macro_hack;
 /// assert_eq!(wide_str, expected);
 /// ```
 #[proc_macro_hack]
-pub use wchar_macro::wch;
+pub use wchar_impl::wch;
 
 /// Generate a C-style nul-terminated UTF-16 wide string from the given string
 /// literal.
@@ -95,4 +95,4 @@ pub use wchar_macro::wch;
 /// assert_eq!(wide_str, expected);
 /// ```
 #[proc_macro_hack]
-pub use wchar_macro::wch_c;
+pub use wchar_impl::wch_c;

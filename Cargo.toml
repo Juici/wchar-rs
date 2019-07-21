@@ -1,6 +1,27 @@
-[workspace]
+[package]
+name = "wchar"
+version = "0.4.0"
+authors = ["Juici <juicy66173@gmail.com>"]
+description = "Procedural macros for compile time UTF-16 strings"
+edition = "2018"
 
-members = [
-    "wchar-rs",
-    "wchar-rs-macro",
-]
+documentation = "https://docs.rs/wchar"
+homepage = "https://github.com/Juici/wchar-rs"
+repository = "https://github.com/Juici/wchar-rs"
+readme = "README.md"
+license = "MIT"
+
+keywords = ["wide", "string", "wchar", "utf16"]
+categories = ["text-processing"]
+
+[badges]
+appveyor = { repository = "Juici/wchar-rs" }
+travis-ci = { repository = "Juici/wchar-rs" }
+maintenance = { status = "passively-maintained" }
+
+[dependencies]
+wchar-impl = { path = "./wchar-impl" }
+proc-macro-hack = "0.5"
+
+[dev-dependencies]
+trybuild = "1.0"
