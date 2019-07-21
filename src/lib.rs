@@ -12,8 +12,6 @@
 //! # Examples
 //!
 //! ```
-//! #![feature(proc_macro, proc_macro_non_items)]
-//!
 //! extern crate wchar;
 //!
 //! use wchar::{wch, wch_c};
@@ -27,17 +25,7 @@
 //! assert_eq!(ALSO_RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
 //! ```
 
-#![feature(proc_macro)]
-
-extern crate proc_macro;
-extern crate proc_macro2;
-extern crate syn;
-
-use std::fmt::Write;
-use std::iter::once;
-
-use proc_macro2::TokenStream;
-use syn::LitStr;
+use proc_macro_hack::proc_macro_hack;
 
 /// Generate a UTF-16 wide string from the given string literal.
 ///
@@ -55,7 +43,6 @@ use syn::LitStr;
 /// Basic example:
 ///
 /// ```
-/// # #![feature(proc_macro, proc_macro_non_items)]
 /// # use wchar::wch;
 /// let wide_str = wch!("foo");
 /// let expected = &[0x0066, 0x006F, 0x006F];
@@ -66,26 +53,14 @@ use syn::LitStr;
 /// Nul-terminated example:
 ///
 /// ```
-/// # #![feature(proc_macro, proc_macro_non_items)]
 /// # use wchar::wch;
 /// let wide_str = wch!("bar\0");
 /// let expected = &[0x0062, 0x0061, 0x0072, 0x0000];
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[proc_macro]
-pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let input: TokenStream = input.into();
-
-    let lit = match syn::parse2::<LitStr>(input) {
-        Ok(lit) => lit,
-        Err(_) => panic!("expected a string literal"),
-    };
-    let data: String = lit.value();
-
-    let wide_string = WideString::from_str(&data);
-    wide_string.generate_code().parse().unwrap()
-}
+#[proc_macro_hack]
+pub use wchar_impl::wch;
 
 /// Generate a C-style nul-terminated UTF-16 wide string from the given string
 /// literal.
@@ -100,7 +75,6 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 /// Basic example:
 ///
 /// ```
-/// # #![feature(proc_macro, proc_macro_non_items)]
 /// # use wchar::wch_c;
 /// let wide_str = wch_c!("bar");
 /// let expected = &[0x0062, 0x0061, 0x0072, 0x0000];
@@ -111,7 +85,6 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 /// Raw literal example:
 ///
 /// ```
-/// # #![feature(proc_macro, proc_macro_non_items)]
 /// # use wchar::wch_c;
 /// let wide_str = wch_c!(r#"%HOME%\foo\bar"#);
 /// let expected = &[
@@ -121,99 +94,5 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[proc_macro]
-pub fn wch_c(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let input: TokenStream = input.into();
-
-    let lit = match syn::parse2::<LitStr>(input) {
-        Ok(lit) => lit,
-        Err(_) => panic!("expected a string literal"),
-    };
-    let data: String = lit.value();
-
-    let wide_string = WideCString::from_str(&data);
-    wide_string.generate_code().parse().unwrap()
-}
-
-struct WideString {
-    inner: Vec<u16>,
-}
-
-impl WideString {
-    fn from_str(s: &str) -> WideString {
-        #[cfg(windows)]
-        fn encode_wide(s: &str) -> Vec<u16> {
-            use std::ffi::OsStr;
-            use std::os::windows::ffi::OsStrExt;
-
-            OsStr::new(s).encode_wide().collect()
-        }
-
-        #[cfg(not(windows))]
-        fn encode_wide(s: &str) -> Vec<u16> {
-            s.encode_utf16().collect()
-        }
-
-        WideString {
-            inner: encode_wide(s),
-        }
-    }
-
-    fn generate_code(&self) -> String {
-        generate_slice_code(&self.inner)
-    }
-}
-
-struct WideCString {
-    inner: Vec<u16>,
-}
-
-impl WideCString {
-    fn from_str(s: &str) -> WideCString {
-        if s.contains('\0') {
-            panic!("string cannot contain nul characters");
-        }
-
-        #[cfg(windows)]
-        fn encode_wide(s: &str) -> Vec<u16> {
-            use std::ffi::OsStr;
-            use std::os::windows::ffi::OsStrExt;
-
-            OsStr::new(s).encode_wide().chain(once(0)).collect()
-        }
-
-        #[cfg(not(windows))]
-        fn encode_wide(s: &str) -> Vec<u16> {
-            s.encode_utf16().chain(once(0)).collect()
-        }
-
-        WideCString {
-            inner: encode_wide(s),
-        }
-    }
-
-    fn generate_code(&self) -> String {
-        generate_slice_code(&self.inner)
-    }
-}
-
-fn generate_slice_code(slice: &[u16]) -> String {
-    let len = slice.len();
-    // Allocate exact space for final result.
-    let mut s = String::with_capacity(1 + 8 * len);
-
-    s.push_str("&[");
-
-    let mut i = 0;
-    while i < len {
-        if i > 0 {
-            s.push_str(", ");
-        }
-        write!(s, "{:#06X}", &slice[i]).unwrap();
-        i += 1;
-    }
-
-    s.push(']');
-
-    s
-}
+#[proc_macro_hack]
+pub use wchar_impl::wch_c;

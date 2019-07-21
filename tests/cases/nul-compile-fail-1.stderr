@@ -1,0 +1,5 @@
+error: C-style string cannot contain nul characters
+ --> $DIR/nul-compile-fail-1.rs:4:12
+  |
+4 |     wch_c!("fails \0 to compile");
+  |            ^^^^^^^^^^^^^^^^^^^^^

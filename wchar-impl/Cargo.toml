@@ -1,5 +1,5 @@
 [package]
-name = "wchar"
+name = "wchar-impl"
 version = "0.4.0"
 authors = ["Juici <juicy66173@gmail.com>"]
 description = "Procedural macros for compile time UTF-16 strings"
@@ -19,9 +19,11 @@ appveyor = { repository = "Juici/wchar-rs" }
 travis-ci = { repository = "Juici/wchar-rs" }
 maintenance = { status = "passively-maintained" }
 
-[dependencies]
-wchar-impl = { path = "./wchar-impl" }
-proc-macro-hack = "0.5"
+[lib]
+proc-macro = true
 
-[dev-dependencies]
-trybuild = "1.0"
+[dependencies]
+proc-macro2 = "0.4"
+proc-macro-hack = "0.5"
+quote = "0.6"
+syn = { version = "0.15", features = ["full"] }
