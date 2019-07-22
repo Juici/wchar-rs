@@ -19,7 +19,7 @@ travis-ci = { repository = "Juici/wchar-rs" }
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
-wchar-impl = { path = "./wchar-impl" }
+wchar-impl = { path = "./wchar-impl", version = "0.4.0" }
 proc-macro-hack = "0.5"
 
 [dev-dependencies]
