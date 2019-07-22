@@ -8,15 +8,7 @@ edition = "2018"
 documentation = "https://docs.rs/wchar"
 homepage = "https://github.com/Juici/wchar-rs"
 repository = "https://github.com/Juici/wchar-rs"
-readme = "README.md"
 license = "MIT"
-
-keywords = ["wide", "string", "wchar", "utf16"]
-categories = ["text-processing"]
-
-[badges]
-travis-ci = { repository = "Juici/wchar-rs" }
-maintenance = { status = "passively-maintained" }
 
 [lib]
 proc-macro = true
