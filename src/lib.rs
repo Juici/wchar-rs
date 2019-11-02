@@ -24,6 +24,7 @@
 //! const ALSO_RUST: &[u16] = wch_c!("Rust");
 //! assert_eq!(ALSO_RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
 //! ```
+#![no_std]
 
 use proc_macro_hack::proc_macro_hack;
 
