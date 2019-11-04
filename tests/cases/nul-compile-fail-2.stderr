@@ -3,3 +3,5 @@ error: C-style string cannot contain nul characters
   |
 4 |     wch_c!("also fails \0");
   |            ^^^^^^^^^^^^^^^
+
+error: could not compile `wchar-tests`.
