@@ -11,15 +11,15 @@ script:
 
 matrix:
   include:
-    - rust: nightly
-      env: ROLE=test
-      script:
-        - cargo test --all-features --release
     - rust: stable
       env: ROLE=test
       script:
         - cargo test --all-features --release
   allow_failures:
+    - rust: nightly
+      env: ROLE=test
+      script:
+        - cargo test --all-features --release
     - rust: nightly
       env: ROLE=clippy
       script:
