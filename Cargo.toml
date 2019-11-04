@@ -20,7 +20,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 wchar-impl = { version = "0.5.0", path = "./wchar-impl" }
-proc-macro-hack = "0.5.11"
+proc-macro-hack = "0.5"
 
 [dev-dependencies]
-trybuild = "1.0.17"
+trybuild = "1.0"
