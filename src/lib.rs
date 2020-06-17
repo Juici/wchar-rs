@@ -6,8 +6,8 @@
 //! In order to use the macro the `proc_macro` and `proc_macro_non_items`
 //! features must be enabled.
 //!
-//! [`wch!`]: fn.wch.html
-//! [`wch_c!`]: fn.wch_c.html
+//! [`wch!`]: macro.wch.html
+//! [`wch_c!`]: macro.wch_c.html
 //!
 //! # Examples
 //!
@@ -36,7 +36,7 @@ use proc_macro_hack::proc_macro_hack;
 /// validations are made about internal nul characters. For more complex use
 /// cases it is recommended to use [`wch_c!`].
 ///
-/// [`wch_c!`]: fn.wch_c.html
+/// [`wch_c!`]: macro.wch_c.html
 ///
 /// # Examples
 ///

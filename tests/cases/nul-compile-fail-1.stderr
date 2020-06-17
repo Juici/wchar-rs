@@ -3,3 +3,5 @@ error: C-style string cannot contain nul characters
   |
 4 |     wch_c!("fails \0 to compile");
   |            ^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in a macro (in Nightly builds, run with -Z macro-backtrace for more info)
