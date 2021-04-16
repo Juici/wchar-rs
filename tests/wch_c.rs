@@ -48,6 +48,19 @@ fn basic() {
 }
 
 #[test]
+fn complex() {
+    test_wch_c!("京");
+    test_wch_c!("٣");
+    test_wch_c!("و");
+}
+
+#[test]
+fn emoji() {
+    test_wch_c!("🦀");
+    test_wch_c!("💖");
+}
+
+#[test]
 fn escape_chars() {
     test_wch_c!("foo\nbar");
     test_wch_c!("foo\r\nbar");
