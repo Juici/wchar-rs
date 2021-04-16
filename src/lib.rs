@@ -1,18 +1,13 @@
-//! A procedural macro for compile time UTF-16 wide strings.
+//! This library introduces two macros [`wch`] and [`wch_c`] to create UTF-16 or
+//! UTF-32 wide strings at compiler time, like `L` string literals in C.
 //!
-//! This crate introduces two macros [`wch!`] and [`wch_c!`] to create UTF-16
-//! wide strings at compiler time, like the `L` literal in C.
-//!
-//! [`wch!`]: macro.wch.html
-//! [`wch_c!`]: macro.wch_c.html
-//!
-//! # Examples
+//! # Example
 //!
 //! ```
 //! use wchar::{wch, wch_c};
 //!
 //! // Equivalent to `#define RUST L"Rust"` in C.
-//! const RUST: &[u16] = wch!("Rust\0"); // C strings are null-terminated.
+//! const RUST: &[u16] = wch!("Rust\0"); // C strings are nul-terminated.
 //! assert_eq!(RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
 //!
 //! // Equivalent to `#define ALSO_RUST L"Rust"` in C.
@@ -22,16 +17,18 @@
 
 #![no_std]
 
-/// Generate a UTF-16 wide string from the given string literal.
+#[doc(hidden)]
+pub use wchar_impl;
+
+/// Generate a UTF-16 or UTF-32 wide string from the given string literal.
 ///
-/// The generated output takes the form of a slice of wide characters
-/// `&'static [u16]`.
+/// The generated output takes the form of a slice of wide characters.
 ///
-/// Whilst `wch!` can be used for C-style nul-terminated wide strings, no
-/// validations are made about internal nul characters. For more complex use
-/// cases it is recommended to use [`wch_c!`].
+/// # Notes
 ///
-/// [`wch_c!`]: macro.wch_c.html
+/// Whilst [`wch`] can be used for C-style nul-terminated wide strings, no
+/// validations are made about internal nul characters. If your strings need to
+/// be nul-terminated it is recommended to use [`wch_c`].
 ///
 /// # Examples
 ///
@@ -54,16 +51,33 @@
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[deprecated(since = "0.7.0", note = "Prefer to use the wstr! macro")]
-pub use wchar_impl::wch;
-
-/// Generate a C-style nul-terminated UTF-16 wide string from the given string
-/// literal.
 ///
-/// The generated output takes the form of a slice of wide characters
-/// `&'static [u16]`, with a nul-terminator as the last wide character.
+/// UTF-32 example:
+///
+/// ```
+/// # use wchar::wch;
+/// let wide_str = wch!(u32, "wide");
+/// let expected = &['w' as u32, 'i' as u32, 'd' as u32, 'e' as u32];
+///
+/// assert_eq!(wide_str, expected);
+/// ```
+#[macro_export]
+macro_rules! wch {
+    ($string:literal) => {
+        $crate::wch!(u16, $string)
+    };
+    ($ty:ident, $string:literal) => {
+        $crate::wchar_impl::wch!($ty, $string)
+    };
+}
+
+/// Generate a C-style nul-terminated UTF-16 or UTF-32 wide string from the
+/// given string literal.
 ///
 /// Validations are made that the given string does not contain nul characters.
+///
+/// The generated output takes the form of a slice of wide characters, with a
+/// nul-terminator as the last wide character.
 ///
 /// # Examples
 ///
@@ -89,5 +103,12 @@ pub use wchar_impl::wch;
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[deprecated(since = "0.7.0", note = "Prefer to use the wstrz! macro")]
-pub use wchar_impl::wch_c;
+#[macro_export]
+macro_rules! wch_c {
+    ($string:literal) => {
+        $crate::wch_c!(u16, $string)
+    };
+    ($ty:ident, $string:literal) => {
+        $crate::wchar_impl::wch_c!($ty, $string)
+    };
+}
