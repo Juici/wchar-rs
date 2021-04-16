@@ -1,24 +1,17 @@
 [package]
 name = "wchar-impl"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Juici <juicy66173@gmail.com>"]
 description = "Internal implementation of wchar using proc-macro-hack"
 edition = "2018"
+license = "MIT or Apache-2.0"
 
-documentation = "https://docs.rs/wchar"
-homepage = "https://github.com/Juici/wchar-rs"
 repository = "https://github.com/Juici/wchar-rs"
-license = "MIT"
 
 [lib]
 proc-macro = true
 
 [dependencies]
 proc-macro2 = "1.0"
-proc-macro-hack = "0.5"
 quote = "1.0"
-
-[dependencies.syn]
-version = "1.0"
-default-features = false
-features = ["derive", "parsing", "proc-macro"]
+syn = "1.0"

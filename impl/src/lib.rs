@@ -2,10 +2,9 @@ extern crate proc_macro;
 
 use std::iter::once;
 
-use proc_macro_hack::proc_macro_hack;
 use syn::LitStr;
 
-#[proc_macro_hack]
+#[proc_macro]
 pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let lit: LitStr = syn::parse_macro_input!(input as LitStr);
 
@@ -19,7 +18,7 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     expanded.into()
 }
 
-#[proc_macro_hack]
+#[proc_macro]
 pub fn wch_c(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let lit: LitStr = syn::parse_macro_input!(input as LitStr);
 

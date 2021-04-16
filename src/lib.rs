@@ -3,9 +3,6 @@
 //! This crate introduces two macros [`wch!`] and [`wch_c!`] to create UTF-16
 //! wide strings at compiler time, like the `L` literal in C.
 //!
-//! In order to use the macro the `proc_macro` and `proc_macro_non_items`
-//! features must be enabled.
-//!
 //! [`wch!`]: macro.wch.html
 //! [`wch_c!`]: macro.wch_c.html
 //!
@@ -24,8 +21,6 @@
 //! ```
 
 #![no_std]
-
-use proc_macro_hack::proc_macro_hack;
 
 /// Generate a UTF-16 wide string from the given string literal.
 ///
@@ -59,7 +54,7 @@ use proc_macro_hack::proc_macro_hack;
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[proc_macro_hack]
+#[deprecated(since = "0.7.0", note = "Prefer to use the wstr! macro")]
 pub use wchar_impl::wch;
 
 /// Generate a C-style nul-terminated UTF-16 wide string from the given string
@@ -94,5 +89,5 @@ pub use wchar_impl::wch;
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-#[proc_macro_hack]
+#[deprecated(since = "0.7.0", note = "Prefer to use the wstrz! macro")]
 pub use wchar_impl::wch_c;
