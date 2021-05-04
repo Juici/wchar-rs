@@ -1,30 +1,29 @@
 use std::iter::once;
 
-use wchar::wch_c;
+use wchar::{wchar_t, wchz};
 
-macro_rules! test_wch_c {
+macro_rules! test_wchz {
     ($s:literal) => {{
-        assert_eq!(wch_c!($s), wch_c!(u16, $s));
         assert_eq!(
-            wch_c!(u16, $s),
+            wchz!(u16, $s),
             &*$s.encode_utf16().chain(once(0)).collect::<Vec<_>>()
         );
         assert_eq!(
-            wch_c!(i16, $s),
+            wchz!(i16, $s),
             &*$s.encode_utf16()
                 .map(|c| c as i16)
                 .chain(once(0))
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            wch_c!(u32, $s),
+            wchz!(u32, $s),
             &*$s.chars()
                 .map(|c| c as u32)
                 .chain(once(0))
                 .collect::<Vec<_>>()
         );
         assert_eq!(
-            wch_c!(i32, $s),
+            wchz!(i32, $s),
             &*$s.chars()
                 .map(|c| c as i32)
                 .chain(once(0))
@@ -34,44 +33,44 @@ macro_rules! test_wch_c {
 }
 
 // Check we can use the macro to declare constants.
-const _: &[u16] = wch_c!("const");
-const _: &[u16] = wch_c!(u16, "const");
-const _: &[i16] = wch_c!(i16, "const");
-const _: &[u32] = wch_c!(u32, "const");
-const _: &[i32] = wch_c!(i32, "const");
+const _: &[wchar_t] = wchz!("const");
+const _: &[u16] = wchz!(u16, "const");
+const _: &[i16] = wchz!(i16, "const");
+const _: &[u32] = wchz!(u32, "const");
+const _: &[i32] = wchz!(i32, "const");
 
 #[test]
 fn basic() {
-    test_wch_c!("foo");
-    test_wch_c!("bar");
-    test_wch_c!("foo bar");
+    test_wchz!("foo");
+    test_wchz!("bar");
+    test_wchz!("foo bar");
 }
 
 #[test]
 fn complex() {
-    test_wch_c!("京");
-    test_wch_c!("٣");
-    test_wch_c!("و");
+    test_wchz!("京");
+    test_wchz!("٣");
+    test_wchz!("و");
 }
 
 #[test]
 fn emoji() {
-    test_wch_c!("🦀");
-    test_wch_c!("💖");
+    test_wchz!("🦀");
+    test_wchz!("💖");
 }
 
 #[test]
 fn escape_chars() {
-    test_wch_c!("foo\nbar");
-    test_wch_c!("foo\r\nbar");
-    test_wch_c!("foo\tbar");
+    test_wchz!("foo\nbar");
+    test_wchz!("foo\r\nbar");
+    test_wchz!("foo\tbar");
 }
 
 #[test]
 fn raw_literals() {
-    test_wch_c!(r"\");
-    test_wch_c!(r"foo\bar\");
+    test_wchz!(r"\");
+    test_wchz!(r"foo\bar\");
 
-    test_wch_c!(r#"foo"bar"#);
-    test_wch_c!(r#"foo "bar" baz"#);
+    test_wchz!(r#"foo"bar"#);
+    test_wchz!(r#"foo "bar" baz"#);
 }

@@ -13,27 +13,27 @@ env:
 jobs:
   test:
     name: test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       # Emit backtraces on panics.
       RUST_BACKTRACE: 1
     strategy:
       fail-fast: false
       matrix:
-        build:
-          - pinned
-          - stable
-          - beta
-          - nightly
         include:
-          - build: pinned
-            rust: 1.45.0
-          - build: stable
-            rust: stable
-          - build: beta
-            rust: beta
-          - build: nightly
-            rust: nightly
+          # Minimum supported version.
+          - rust: 1.45.0
+            os: ubuntu-latest
+          # Standard toolchain versions.
+          - rust: stable
+            os: ubuntu-latest
+          - rust: beta
+            os: ubuntu-latest
+          - rust: nightly
+            os:
+              - ubuntu-latest
+              - windows-latest
+              - macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

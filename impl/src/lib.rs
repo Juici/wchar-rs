@@ -41,9 +41,6 @@ impl Parse for Input {
                     ));
                 }
             }
-        } else if lookahead.peek(LitStr) {
-            // Default to u16 as the wide character.
-            WCharType::U16
         } else {
             // We expect the wide character type or the string.
             return Err(lookahead.error());
@@ -63,7 +60,7 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
     // Warn the user that they should probably be using wch_c.
     // if let Some(0) = string.as_bytes().last() {
-    //     lit.span().unwrap().warning("string is terminated by nul character, perhaps you should use wch_c");
+    //     lit.span().unwrap().warning("string is terminated by nul character, perhaps you should use wchz");
     // }
 
     let expanded = match ty {
@@ -89,7 +86,7 @@ pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 }
 
 #[proc_macro]
-pub fn wch_c(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+pub fn wchz(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let Input { ty, lit } = syn::parse_macro_input!(input);
 
     let string = lit.value();

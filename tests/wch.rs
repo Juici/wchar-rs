@@ -1,8 +1,7 @@
-use wchar::wch;
+use wchar::{wch, wchar_t};
 
 macro_rules! test_wch {
     ($s:literal) => {{
-        assert_eq!(wch!($s), wch!(u16, $s));
         assert_eq!(wch!(u16, $s), &*$s.encode_utf16().collect::<Vec<_>>());
         assert_eq!(
             wch!(i16, $s),
@@ -20,7 +19,7 @@ macro_rules! test_wch {
 }
 
 // Check we can use the macro to declare constants.
-const _: &[u16] = wch!("const");
+const _: &[wchar_t] = wch!("const");
 const _: &[u16] = wch!(u16, "const");
 const _: &[i16] = wch!(i16, "const");
 const _: &[u32] = wch!(u32, "const");
