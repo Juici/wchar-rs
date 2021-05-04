@@ -30,10 +30,12 @@ jobs:
           - rust: beta
             os: ubuntu-latest
           - rust: nightly
-            os:
-              - ubuntu-latest
-              - windows-latest
-              - macos-latest
+            os: ubuntu-latest
+          # Platform support.
+          - rust: stable
+            os: windows-latest
+          - rust: stable
+            os: macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
