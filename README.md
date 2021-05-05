@@ -9,7 +9,7 @@ compiler time, like `L` string literals in C.
 
 ```toml
 [dependencies]
-wchar = "0.7"
+wchar = "0.8"
 ```
 
 *Compiler support: requires rustc 1.45+*
@@ -17,12 +17,15 @@ wchar = "0.7"
 ## Example
 
 ```rust
-use wchar::{wch, wch_c};
+use wchar::{wch, wchz, wchar_t};
 
 // Equivalent to `#define RUST L"Rust"` in C.
-const RUST: &[u16] = wch_c!("Rust");
-assert_eq!(RUST, &[0x0052, 0x0075, 0x0073, 0x0074, 0x0000]);
-assert_eq!(RUST, wch!("Rust\0"));
+const RUST: &[wchar_t] = wch!("Rust\0"); // C strings are nul-terminated.
+// Equivalent to `#define ALSO_RUST L"Rust"` in C.
+const ALSO_RUST: &[wchar_t] = wchz!("Rust");
+
+assert_eq!(RUST, &['R' as wchar_t, 'u' as wchar_t, 's' as wchar_t, 't' as wchar_t, 0x0000]);
+assert_eq!(RUST, ALSO_RUST);
 ```
 
 ## License
