@@ -1,5 +1,5 @@
 error: C-style string cannot contain nul characters
- --> $DIR/wchz_nul_mid.rs:3:35
+ --> $DIR/nul_end_wchz.rs:3:35
   |
-3 | const NUL_MID: &[wchar_t] = wchz!("nul byte\0 mid");
+3 | const NUL_END: &[wchar_t] = wchz!("nul byte end\0");
   |                                   ^^^^^^^^^^^^^^^^

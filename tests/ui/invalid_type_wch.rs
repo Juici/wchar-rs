@@ -1,5 +1,5 @@
 use wchar::wch;
 
-const INVALID: &[f32] = wch!(f32, "oops");
+const INVALID_TYPE: &[f32] = wch!(f32, "oops");
 
 fn main() {}
