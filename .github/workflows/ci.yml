@@ -3,8 +3,14 @@ name: ci
 on:
   pull_request:
   push:
+    branches:
+      - master
   schedule:
     - cron: '00 00 * * *'
+
+defaults:
+  run:
+    shell: bash
 
 env:
   # Coloured output from Cargo.
@@ -15,26 +21,67 @@ env:
 jobs:
   test:
     name: test
+    env:
+      # We use cross to test on 32-bit and big-endian systems.
+      CARGO: cargo
+      # When CARGO is set to `cross`, TARGET is set to `--target matrix.target`.
+      TARGET: ''
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        include:
+        build:
           # Minimum supported version.
-          - rust: 1.45.0
-            os: ubuntu-latest
+          - pinned
           # Standard toolchain versions.
-          - rust: stable
-            os: ubuntu-latest
-          - rust: beta
-            os: ubuntu-latest
-          - rust: nightly
-            os: ubuntu-latest
+          - stable
+          - beta
+          - nightly
           # Platform support.
-          - rust: stable
-            os: windows-latest
-          - rust: stable
+          - nightly-musl
+          - nightly-32
+          - nightly-mips
+          - nightly-arm
+          - macos
+          - windows-msvc
+          - windows-gnu
+        include:
+          - build: pinned
+            os: ubuntu-latest
+            rust: 1.45.0
+          - build: stable
+            os: ubuntu-latest
+            rust: stable
+          - build: beta
+            os: ubuntu-latest
+            rust: beta
+          - build: nightly
+            os: ubuntu-latest
+            rust: nightly
+          - build: nightly-musl
+            os: ubuntu-latest
+            rust: nighly
+            target: x86_64-unknown-linux-musl
+          - build: nightly-32
+            os: ubuntu-latest
+            rust: nightly
+            target: i686-unknown-linux-gnu
+          - build: nightly-mips
+            os: ubuntu-latest
+            rust: nightly
+            target: mips64-unknown-linux-gnuabi64
+          - build: nightly-arm
+            os: ubuntu-latest
+            rust: nightly
+            target: arm-unknown-linux-gnueabihf
+          - build: macos
             os: macos-latest
+            rust: nightly
+          - build: windows-msvc
+            os: windows-latest
+            rust: nightly-x86_64-msvc
+          - build: windows-gnu
+            os: windows-latest
+            rust: nightly-x86_64-gnu
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -46,12 +93,31 @@ jobs:
           override: true
           profile: minimal
 
+      - name: Use Cross
+        if: ${{ matrix.target != '' }}
+        run: |
+          cargo install cross
+          echo "CARGO=cross" >> $GITHUB_ENV
+          echo "TARGET=--target ${{ matrix.target }}" >> $GITHUB_ENV
+
+      - name: Show command used for Cargo
+        run: |
+          echo "cargo command: ${{ env.CARGO }}"
+          echo "target flag: ${{ env.TARGET }}"
+
+      - name: Build
+        run: ${{ env.CARGO }} build --verbose --workspace ${{ env.TARGET }}
+
+      - name: Build (nightly)
+        if: ${{ startsWith(matrix.rust, 'nightly') }}
+        run: ${{ env.CARGO }} build --verbose --workspace --features nightly ${{ env.TARGET }}
+
       - name: Run tests
-        run: cargo test --verbose --workspace
+        run: ${{ env.CARGO }} test --verbose --workspace ${{ env.TARGET }}
 
       - name: Run tests (nightly)
-        if: matrix.rust == 'nightly'
-        run: cargo test --verbose --workspace --features nightly
+        if: ${{ startsWith(matrix.rust, 'nightly') }}
+        run: ${{ env.CARGO }} test --verbose --workspace --features nightly ${{ env.TARGET }}
 
   rustfmt:
     name: rustfmt
