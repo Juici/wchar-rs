@@ -224,7 +224,7 @@ macro_rules! include_wch {
 #[macro_export]
 macro_rules! include_wchz {
     ($ty:ident, $string:literal) => {
-        $crate::_impl::include_wch!($ty, $string)
+        $crate::_impl::include_wchz!($ty, $string)
     };
     ($string:literal) => {
         $crate::__expand_platform_wchar!(include_wchz, $string)

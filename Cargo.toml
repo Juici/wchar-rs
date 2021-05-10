@@ -24,6 +24,7 @@ cfg-if = "1.0.0"
 wchar-impl = { version = "0.9.0", path = "impl" }
 
 [dev-dependencies]
+anyhow = "1.0"
 rustversion = "1.0"
 trybuild = { version = "1.0", features = ["diff"] }
 

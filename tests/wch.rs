@@ -43,6 +43,7 @@ fn complex() {
 fn emoji() {
     test_wch!("🦀");
     test_wch!("💖");
+    test_wch!("🇬🇧");
 }
 
 #[test]

@@ -1,0 +1,5 @@
+error: couldn't read $DIR/tests/ui_unstable/../data: Is a directory (os error 21)
+ --> $DIR/dir_include_wchz.rs:3:39
+  |
+3 | const DIR: &[wchar_t] = include_wchz!("../data");
+  |                                       ^^^^^^^^^

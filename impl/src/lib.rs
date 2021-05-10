@@ -21,7 +21,7 @@ pub fn wchz(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let Input { ty, lit } = syn::parse_macro_input!(input);
 
     let text = lit.value();
-    if text.contains('\0') {
+    if text.as_bytes().contains(&0) {
         return syn::Error::new(lit.span(), "C-style string cannot contain nul characters")
             .to_compile_error()
             .into();
@@ -53,7 +53,7 @@ pub fn include_wchz(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         Err(err) => return err,
     };
 
-    if text.contains('\0') {
+    if text.as_bytes().contains(&0) {
         return syn::Error::new(lit.span(), "C-style string cannot contain nul characters")
             .to_compile_error()
             .into();
