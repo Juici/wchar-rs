@@ -17,6 +17,11 @@
 
 #![no_std]
 
+#[doc(hidden)]
+pub use core as _core;
+#[doc(hidden)]
+pub use wchar_impl as _impl;
+
 cfg_if::cfg_if! {
     if #[cfg(wchar_t = "u16")] {
         /// Platform wide character type.
@@ -65,12 +70,7 @@ cfg_if::cfg_if! {
     }
 }
 
-#[doc(hidden)]
-pub use core as _core;
-#[doc(hidden)]
-pub use wchar_impl as _impl;
-
-/// Generate a UTF-16 or UTF-32 wide string from the given string literal.
+/// Generate a UTF-16 or UTF-32 wide string from a string literal.
 ///
 /// The generated output takes the form of a slice of wide characters.
 ///
@@ -85,14 +85,14 @@ pub use wchar_impl as _impl;
 ///
 /// # Examples
 ///
-/// Basic example (platform native):
+/// Basic usage (platform native):
 ///
 /// ```
 /// # use wchar::{wch, wchar_t};
 /// const WIDE: &[wchar_t] = wch!("foo");
 /// ```
 ///
-/// UTF-16 example:
+/// UTF-16 usage:
 ///
 /// ```
 /// # use wchar::wch;
@@ -102,7 +102,7 @@ pub use wchar_impl as _impl;
 /// assert_eq!(wide_str, expected);
 /// ```
 ///
-/// UTF-32 example:
+/// UTF-32 usage:
 ///
 /// ```
 /// # use wchar::wch;
@@ -121,8 +121,8 @@ macro_rules! wch {
     };
 }
 
-/// Generate a C-style nul-terminated UTF-16 or UTF-32 wide string from the
-/// given string literal.
+/// Generate a C-style nul-terminated UTF-16 or UTF-32 wide string from a
+/// string literal.
 ///
 /// Validations are made that the given string does not contain nul characters.
 ///
@@ -134,14 +134,14 @@ macro_rules! wch {
 ///
 /// # Examples
 ///
-/// Basic example (platform native):
+/// Basic usage (platform native):
 ///
 /// ```
 /// # use wchar::{wchz, wchar_t};
 /// const WIDE: &[wchar_t] = wchz!("foo");
 /// ```
 ///
-/// UTF-16 example:
+/// UTF-16 usage:
 ///
 /// ```
 /// # use wchar::wchz;
@@ -151,7 +151,7 @@ macro_rules! wch {
 /// assert_eq!(wide_str, expected);
 /// ```
 ///
-/// UTF-32 example:
+/// UTF-32 usage:
 ///
 /// ```
 /// # use wchar::wchz;
@@ -167,5 +167,66 @@ macro_rules! wchz {
     };
     ($string:literal) => {
         $crate::__expand_platform_wchar!(wchz, $string)
+    };
+}
+
+/// Generate a UTF-16 or UTF-32 wide string from a UTF-8 encoded file.
+///
+/// The generated output takes the form of a slice of wide characters.
+///
+/// The first argument is the output character type, if no type is specfied the
+/// platform native `wchar_t` will be used.
+///
+/// # Notes
+///
+/// Whilst this macro can be used for C-style nul-terminated wide strings, no
+/// validations are made about internal nul characters. If your strings need to
+/// be nul-terminated it is recommended to use [`include_wchz`].
+///
+/// # Examples
+///
+/// Basic usage (platform native):
+///
+/// ```
+/// # use wchar::{include_wch, wchar_t};
+/// const WIDE: &[wchar_t] = include_wch!("../README.md");
+/// ```
+#[cfg(feature = "nightly")]
+#[macro_export]
+macro_rules! include_wch {
+    ($ty:ident, $string:literal) => {
+        $crate::_impl::include_wch!($ty, $string)
+    };
+    ($string:literal) => {
+        $crate::__expand_platform_wchar!(include_wch, $string)
+    };
+}
+
+/// Generate a UTF-16 or UTF-32 wide string from a UTF-8 encoded file.
+///
+/// Validations are made that the given string does not contain nul characters.
+///
+/// The generated output takes the form of a slice of wide characters, with a
+/// nul-terminator as the last wide character.
+///
+/// The first argument is the output character type, if no type is specfied the
+/// platform native `wchar_t` will be used.
+///
+/// # Examples
+///
+/// Basic usage (platform native):
+///
+/// ```
+/// # use wchar::{include_wchz, wchar_t};
+/// const WIDE: &[wchar_t] = include_wchz!("../README.md");
+/// ```
+#[cfg(feature = "nightly")]
+#[macro_export]
+macro_rules! include_wchz {
+    ($ty:ident, $string:literal) => {
+        $crate::_impl::include_wch!($ty, $string)
+    };
+    ($string:literal) => {
+        $crate::__expand_platform_wchar!(include_wchz, $string)
     };
 }

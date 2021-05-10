@@ -1,6 +1,6 @@
 [package]
 name = "wchar-impl"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Juici <juicy66173@gmail.com>"]
 description = "Internal implementation of wchar."
 edition = "2018"
@@ -10,6 +10,10 @@ repository = "https://github.com/Juici/wchar-rs"
 
 [lib]
 proc-macro = true
+
+[features]
+default = []
+nightly = ["proc-macro2/nightly"]
 
 [dependencies]
 proc-macro2 = "1.0"
