@@ -20,68 +20,42 @@ env:
 
 jobs:
   test:
-    name: test
+    name: ${{ format('test ({0}', matrix.name || matrix.rust) }}
+    runs-on: ${{ format('{0}-latest', matrix.os || 'ubuntu') }}
     env:
       # We use cross to test on 32-bit and big-endian systems.
       CARGO: cargo
       # When CARGO is set to `cross`, TARGET is set to `--target matrix.target`.
       TARGET: ''
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        build:
-          # Minimum supported version.
+        rust:
           - pinned
-          # Standard toolchain versions.
           - stable
           - beta
           - nightly
-          # Platform support.
-          - nightly-musl
-          - nightly-32
-          - nightly-mips
-          - nightly-arm
-          - macos
-          - windows-msvc
-          - windows-gnu
         include:
-          - build: pinned
-            os: ubuntu-latest
-            rust: 1.45.0
-          - build: stable
-            os: ubuntu-latest
-            rust: stable
-          - build: beta
-            os: ubuntu-latest
-            rust: beta
-          - build: nightly
-            os: ubuntu-latest
-            rust: nightly
-          - build: nightly-musl
-            os: ubuntu-latest
-            rust: nightly
-            target: x86_64-unknown-linux-musl
-          - build: nightly-32
-            os: ubuntu-latest
-            rust: nightly
-            target: i686-unknown-linux-gnu
-          - build: nightly-mips
-            os: ubuntu-latest
-            rust: nightly
-            target: mips64-unknown-linux-gnuabi64
-          - build: nightly-arm
-            os: ubuntu-latest
-            rust: nightly
-            target: arm-unknown-linux-gnueabihf
-          - build: macos
-            os: macos-latest
-            rust: nightly
-          - build: windows-msvc
-            os: windows-latest
-            rust: nightly-x86_64-msvc
-          - build: windows-gnu
-            os: windows-latest
-            rust: nightly-x86_64-gnu
+          # - rust: nightly
+          #   name: linux-musl
+          #   target: x86_64-unknown-linux-musl
+          # - rust: nightly
+          #   name: linux-32
+          #   target: i686-unknown-linux-gnu
+          # - rust: nightly
+          #   name: linux-mips
+          #   target: mips64-unknown-linux-gnuabi64
+          # - rust: nightly
+          #   name: linux-arm
+          #   target: arm-unknown-linux-gnueabihf
+          - rust: nightly
+            name: macos
+            os: macos
+          - rust: nightly-x86_64-msvc
+            name: windows-msvc
+            os: windows
+          - rust: nightly-x86_64-gnu
+            name: windows-gnu
+            os: windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -136,3 +110,15 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt --all -- --check
+
+  # Collect jobs required for CI success.
+  success:
+    name: ci pass
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - rustfmt
+    steps:
+      - name: Mark the job as successful
+        run: exit 0
