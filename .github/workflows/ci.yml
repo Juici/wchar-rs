@@ -20,7 +20,7 @@ env:
 
 jobs:
   test:
-    name: ${{ format('test ({0}', matrix.name || matrix.rust) }}
+    name: ${{ format('test ({0})', matrix.name || matrix.rust) }}
     runs-on: ${{ format('{0}-latest', matrix.os || 'ubuntu') }}
     env:
       # We use cross to test on 32-bit and big-endian systems.
