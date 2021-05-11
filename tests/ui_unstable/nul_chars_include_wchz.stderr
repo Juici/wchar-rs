@@ -1,0 +1,5 @@
+error: C-style string cannot contain nul characters
+ --> $DIR/nul_chars_include_wchz.rs:3:45
+  |
+3 | const NUL_CHARS: &[wchar_t] = include_wchz!("../data/nul_chars.txt");
+  |                                             ^^^^^^^^^^^^^^^^^^^^^^^

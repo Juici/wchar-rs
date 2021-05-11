@@ -1,5 +1,5 @@
 error: unexpected wchar type `f32`, expected one of: u16, u32, i16, i32
- --> $DIR/invalid_type_wchz.rs:3:31
+ --> $DIR/invalid_type_wchz.rs:3:36
   |
-3 | const INVALID: &[f32] = wchz!(f32, "oops");
-  |                               ^^^
+3 | const INVALID_TYPE: &[f32] = wchz!(f32, "oops");
+  |                                    ^^^

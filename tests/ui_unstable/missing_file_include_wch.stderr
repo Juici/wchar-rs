@@ -1,0 +1,5 @@
+error: couldn't read $DIR/tests/ui_unstable/missing_file: No such file or directory (os error 2)
+ --> $DIR/missing_file_include_wch.rs:3:47
+  |
+3 | const MISSING_FILE: &[wchar_t] = include_wch!("missing_file");
+  |                                               ^^^^^^^^^^^^^^

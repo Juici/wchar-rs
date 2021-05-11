@@ -3,39 +3,59 @@ name: ci
 on:
   pull_request:
   push:
+    branches:
+      - master
   schedule:
     - cron: '00 00 * * *'
+
+defaults:
+  run:
+    shell: bash
 
 env:
   # Coloured output from Cargo.
   CARGO_TERM_COLOR: always
+  # Emit backtraces on panics.
+  RUST_BACKTRACE: 1
 
 jobs:
   test:
-    name: test
-    runs-on: ${{ matrix.os }}
+    name: ${{ format('test ({0})', matrix.name || matrix.rust) }}
+    runs-on: ${{ format('{0}-latest', matrix.os || 'ubuntu') }}
     env:
-      # Emit backtraces on panics.
-      RUST_BACKTRACE: 1
+      # We use cross to test on 32-bit and big-endian systems.
+      CARGO: cargo
+      # When CARGO is set to `cross`, TARGET is set to `--target matrix.target`.
+      TARGET: ''
     strategy:
-      fail-fast: false
       matrix:
+        rust:
+          - 1.45.0
+          - stable
+          - beta
+          - nightly
         include:
-          # Minimum supported version.
-          - rust: 1.45.0
-            os: ubuntu-latest
-          # Standard toolchain versions.
-          - rust: stable
-            os: ubuntu-latest
-          - rust: beta
-            os: ubuntu-latest
+          # - rust: nightly
+          #   name: linux-musl
+          #   target: x86_64-unknown-linux-musl
+          # - rust: nightly
+          #   name: linux-32
+          #   target: i686-unknown-linux-gnu
+          # - rust: nightly
+          #   name: linux-mips
+          #   target: mips64-unknown-linux-gnuabi64
+          # - rust: nightly
+          #   name: linux-arm
+          #   target: arm-unknown-linux-gnueabihf
           - rust: nightly
-            os: ubuntu-latest
-          # Platform support.
-          - rust: stable
-            os: windows-latest
-          - rust: stable
-            os: macos-latest
+            name: macos
+            os: macos
+          - rust: nightly-x86_64-msvc
+            name: windows-msvc
+            os: windows
+          - rust: nightly-x86_64-gnu
+            name: windows-gnu
+            os: windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -47,8 +67,31 @@ jobs:
           override: true
           profile: minimal
 
+      - name: Use Cross
+        if: ${{ matrix.target != '' }}
+        run: |
+          cargo install cross
+          echo "CARGO=cross" >> $GITHUB_ENV
+          echo "TARGET=--target ${{ matrix.target }}" >> $GITHUB_ENV
+
+      - name: Show command used for Cargo
+        run: |
+          echo "cargo command: ${{ env.CARGO }}"
+          echo "target flag: ${{ env.TARGET }}"
+
+      - name: Build
+        run: ${{ env.CARGO }} build --verbose --workspace ${{ env.TARGET }}
+
+      - name: Build (nightly)
+        if: ${{ startsWith(matrix.rust, 'nightly') }}
+        run: ${{ env.CARGO }} build --verbose --workspace --features nightly ${{ env.TARGET }}
+
       - name: Run tests
-        run: cargo test --verbose --workspace
+        run: ${{ env.CARGO }} test --verbose --workspace ${{ env.TARGET }}
+
+      - name: Run tests (nightly)
+        if: ${{ startsWith(matrix.rust, 'nightly') }}
+        run: ${{ env.CARGO }} test --verbose --workspace --features nightly ${{ env.TARGET }}
 
   rustfmt:
     name: rustfmt
@@ -67,3 +110,15 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt --all -- --check
+
+  # Collect jobs required for CI success.
+  success:
+    name: ci pass
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - rustfmt
+    steps:
+      - name: Mark the job as successful
+        run: exit 0
