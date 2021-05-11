@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         rust:
-          - pinned
+          - 1.45.0
           - stable
           - beta
           - nightly
