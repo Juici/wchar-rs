@@ -1,4 +1,4 @@
-error: unexpected wchar type `f32`, expected one of: u16, u32, i16, i32
+error: expected one of: `u16`, `u32`, `i16`, `i32`
  --> $DIR/invalid_type_wch.rs:3:35
   |
 3 | const INVALID_TYPE: &[f32] = wch!(f32, "oops");

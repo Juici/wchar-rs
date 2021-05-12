@@ -1,4 +1,4 @@
-error: unexpected wchar type `f32`, expected one of: u16, u32, i16, i32
+error: expected one of: `u16`, `u32`, `i16`, `i32`
  --> $DIR/invalid_type_include_wchz.rs:3:44
   |
 3 | const INVALID_TYPE: &[f32] = include_wchz!(f32, "../data/basic.txt");

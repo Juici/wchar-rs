@@ -1,4 +1,4 @@
-#![cfg(feature = "nightly")]
+#![cfg(feature = "unstable")]
 
 mod util;
 
