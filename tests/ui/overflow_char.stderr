@@ -1,10 +1,10 @@
-error: character does not fit within one u16 wide character
+error: character does not fit within a u16 wide character
  --> $DIR/overflow_char.rs:3:37
   |
 3 | const OVERFLOW_U16: u16 = wch!(u16, '💖');
   |                                     ^^^^
 
-error: character does not fit within one i16 wide character
+error: character does not fit within a i16 wide character
  --> $DIR/overflow_char.rs:4:37
   |
 4 | const OVERFLOW_I16: i16 = wch!(i16, '💖');

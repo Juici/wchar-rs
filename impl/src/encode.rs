@@ -9,13 +9,12 @@ use crate::parse::WCharType;
 
 pub fn expand_char(ty: WCharType, c: LitChar) -> Result<TokenStream> {
     fn quote_char<T: Wide>(c: LitChar) -> Result<TokenStream> {
-        let chars = T::encode_char(c.value());
-        match chars[..] {
-            [c] => Ok(quote::quote! { #c }),
-            _ => Err(Error::new(
+        match T::encode_char(c.value()) {
+            Some(c) => Ok(quote::quote! { #c }),
+            None => Err(Error::new(
                 c.span(),
                 format_args!(
-                    "character does not fit within one {} wide character",
+                    "character does not fit within a {} wide character",
                     type_name::<T>()
                 ),
             )),
@@ -59,11 +58,7 @@ pub fn expand_str_c(ty: WCharType, text: &str) -> TokenStream {
 }
 
 trait Wide: Copy + ToTokens {
-    fn encode_char(c: char) -> Vec<Self> {
-        let mut buf = [0; 4];
-        let s = c.encode_utf8(&mut buf);
-        Self::encode_str(s)
-    }
+    fn encode_char(c: char) -> Option<Self>;
 
     fn encode_str(s: &str) -> Vec<Self>;
 
@@ -71,10 +66,14 @@ trait Wide: Copy + ToTokens {
 }
 
 impl Wide for u16 {
-    fn encode_char(c: char) -> Vec<Self> {
-        let mut v = vec![0; c.len_utf16()];
-        c.encode_utf16(&mut v);
-        v
+    fn encode_char(c: char) -> Option<Self> {
+        if c.len_utf16() == 1 {
+            let mut buf = [0; 1];
+            c.encode_utf16(&mut buf);
+            Some(buf[0])
+        } else {
+            None
+        }
     }
 
     fn encode_str(s: &str) -> Vec<Self> {
@@ -87,8 +86,8 @@ impl Wide for u16 {
 }
 
 impl Wide for u32 {
-    fn encode_char(c: char) -> Vec<Self> {
-        vec![c as u32]
+    fn encode_char(c: char) -> Option<Self> {
+        Some(c as u32)
     }
 
     fn encode_str(s: &str) -> Vec<Self> {
@@ -101,6 +100,10 @@ impl Wide for u32 {
 }
 
 impl Wide for i16 {
+    fn encode_char(c: char) -> Option<Self> {
+        u16::encode_char(c).map(|c| c as i16)
+    }
+
     fn encode_str(s: &str) -> Vec<Self> {
         s.encode_utf16().map(|c| c as i16).collect()
     }
@@ -111,8 +114,8 @@ impl Wide for i16 {
 }
 
 impl Wide for i32 {
-    fn encode_char(c: char) -> Vec<Self> {
-        vec![c as i32]
+    fn encode_char(c: char) -> Option<Self> {
+        Some(c as i32)
     }
 
     fn encode_str(s: &str) -> Vec<Self> {
