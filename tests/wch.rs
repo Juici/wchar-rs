@@ -9,20 +9,20 @@ macro_rules! test_wch {
         let string = $s;
 
         let v = wch!(u16, $s);
-        assert_eq!(v, &*u16::encode_wide(string));
-        assert_eq!(string, u16::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u16::encode_str(string));
+        assert_eq!(string, u16::decode_str(v.into_iter().copied()).unwrap());
 
         let v = wch!(u32, $s);
-        assert_eq!(v, &*u32::encode_wide(string));
-        assert_eq!(string, u32::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u32::encode_str(string));
+        assert_eq!(string, u32::decode_str(v.into_iter().copied()).unwrap());
 
         let v = wch!(i16, $s);
-        assert_eq!(v, &*i16::encode_wide(string));
-        assert_eq!(string, i16::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i16::encode_str(string));
+        assert_eq!(string, i16::decode_str(v.into_iter().copied()).unwrap());
 
         let v = wch!(i32, $s);
-        assert_eq!(v, &*i32::encode_wide(string));
-        assert_eq!(string, i32::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i32::encode_str(string));
+        assert_eq!(string, i32::decode_str(v.into_iter().copied()).unwrap());
     }};
 }
 
@@ -45,6 +45,7 @@ fn complex() {
     test_wch!("京");
     test_wch!("٣");
     test_wch!("و");
+    test_wch!("𐐷");
 }
 
 #[test]

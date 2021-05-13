@@ -71,6 +71,12 @@ trait Wide: Copy + ToTokens {
 }
 
 impl Wide for u16 {
+    fn encode_char(c: char) -> Vec<Self> {
+        let mut v = vec![0; c.len_utf16()];
+        c.encode_utf16(&mut v);
+        v
+    }
+
     fn encode_str(s: &str) -> Vec<Self> {
         s.encode_utf16().collect()
     }
@@ -81,6 +87,10 @@ impl Wide for u16 {
 }
 
 impl Wide for u32 {
+    fn encode_char(c: char) -> Vec<Self> {
+        vec![c as u32]
+    }
+
     fn encode_str(s: &str) -> Vec<Self> {
         s.chars().map(|c| c as u32).collect()
     }
@@ -101,6 +111,10 @@ impl Wide for i16 {
 }
 
 impl Wide for i32 {
+    fn encode_char(c: char) -> Vec<Self> {
+        vec![c as i32]
+    }
+
     fn encode_str(s: &str) -> Vec<Self> {
         s.chars().map(|c| c as i32).collect()
     }

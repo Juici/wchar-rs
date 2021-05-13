@@ -18,20 +18,20 @@ macro_rules! test_include_wch {
         let string = include_str!($file);
 
         let v = include_wch!(u16, $file);
-        assert_eq!(v, &*u16::encode_wide(string));
-        assert_eq!(string, u16::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u16::encode_str(string));
+        assert_eq!(string, u16::decode_str(v.into_iter().copied()).unwrap());
 
         let v = include_wch!(u32, $file);
-        assert_eq!(v, &*u32::encode_wide(string));
-        assert_eq!(string, u32::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u32::encode_str(string));
+        assert_eq!(string, u32::decode_str(v.into_iter().copied()).unwrap());
 
         let v = include_wch!(i16, $file);
-        assert_eq!(v, &*i16::encode_wide(string));
-        assert_eq!(string, i16::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i16::encode_str(string));
+        assert_eq!(string, i16::decode_str(v.into_iter().copied()).unwrap());
 
         let v = include_wch!(i32, $file);
-        assert_eq!(v, &*i32::encode_wide(string));
-        assert_eq!(string, i32::decode_wide(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i32::encode_str(string));
+        assert_eq!(string, i32::decode_str(v.into_iter().copied()).unwrap());
     }};
 }
 

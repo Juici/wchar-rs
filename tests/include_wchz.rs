@@ -18,20 +18,20 @@ macro_rules! test_include_wchz {
         let string = include_str!($file);
 
         let v = include_wchz!(u16, $file);
-        assert_eq!(v, &*u16::encode_wide_c(string));
-        assert_eq!(string, u16::decode_wide_c(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u16::encode_str_c(string));
+        assert_eq!(string, u16::decode_str_c(v.into_iter().copied()).unwrap());
 
         let v = include_wchz!(u32, $file);
-        assert_eq!(v, &*u32::encode_wide_c(string));
-        assert_eq!(string, u32::decode_wide_c(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*u32::encode_str_c(string));
+        assert_eq!(string, u32::decode_str_c(v.into_iter().copied()).unwrap());
 
         let v = include_wchz!(i16, $file);
-        assert_eq!(v, &*i16::encode_wide_c(string));
-        assert_eq!(string, i16::decode_wide_c(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i16::encode_str_c(string));
+        assert_eq!(string, i16::decode_str_c(v.into_iter().copied()).unwrap());
 
         let v = include_wchz!(i32, $file);
-        assert_eq!(v, &*i32::encode_wide_c(string));
-        assert_eq!(string, i32::decode_wide_c(v.into_iter().copied()).unwrap());
+        assert_eq!(v, &*i32::encode_str_c(string));
+        assert_eq!(string, i32::decode_str_c(v.into_iter().copied()).unwrap());
     }};
 }
 
