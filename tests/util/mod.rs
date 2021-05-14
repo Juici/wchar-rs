@@ -1,3 +1,4 @@
+use std::char;
 use std::convert::TryFrom;
 use std::iter::once;
 
