@@ -37,7 +37,7 @@ impl Wide for u16 {
     }
 
     fn decode_char(c: Self) -> Result<char> {
-        match char::decode_utf16([c]).next() {
+        match char::decode_utf16(once(c)).next() {
             Some(r) => Ok(r?),
             None => unreachable!(),
         }
