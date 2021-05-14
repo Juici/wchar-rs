@@ -1,6 +1,6 @@
 [package]
 name = "wchar"
-version = "0.10.0"
+version = "0.10.1"
 authors = ["Juici <juicy66173@gmail.com>"]
 description = "Procedural macros for compile time UTF-16 strings"
 edition = "2018"
@@ -18,7 +18,6 @@ default = []
 unstable = ["wchar-impl/unstable"]
 
 [dependencies]
-cfg-if = "1.0.0"
 wchar-impl = { version = "0.10.0", path = "impl" }
 
 [dev-dependencies]
