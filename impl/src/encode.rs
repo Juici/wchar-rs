@@ -7,8 +7,8 @@ use syn::{Error, LitChar, Result};
 
 use crate::parse::WCharType;
 
-pub fn expand_char(ty: WCharType, c: LitChar) -> Result<TokenStream> {
-    fn quote_char<T: Wide>(c: LitChar) -> Result<TokenStream> {
+pub fn expand_char(ty: Option<WCharType>, c: LitChar) -> Result<TokenStream> {
+    fn quote_char<T: Encode>(c: LitChar) -> Result<TokenStream> {
         match T::encode_char(c.value()) {
             Some(c) => Ok(quote::quote! { #c }),
             None => Err(Error::new(
@@ -22,42 +22,47 @@ pub fn expand_char(ty: WCharType, c: LitChar) -> Result<TokenStream> {
     }
 
     match ty {
-        WCharType::U16(_) => quote_char::<u16>(c),
-        WCharType::U32(_) => quote_char::<u32>(c),
-        WCharType::I16(_) => quote_char::<i16>(c),
-        WCharType::I32(_) => quote_char::<i32>(c),
+        Some(WCharType::U16(_)) => quote_char::<u16>(c),
+        Some(WCharType::U32(_)) => quote_char::<u32>(c),
+        Some(WCharType::I16(_)) => quote_char::<i16>(c),
+        Some(WCharType::I32(_)) => quote_char::<i32>(c),
+        None => quote_char::<libc::wchar_t>(c),
     }
 }
 
-pub fn expand_str(ty: WCharType, text: &str) -> TokenStream {
-    fn quote_str<T: Wide>(text: &str) -> TokenStream {
+pub fn expand_str(ty: Option<WCharType>, text: &str) -> TokenStream {
+    fn quote_str<T: Encode>(text: &str) -> TokenStream {
         let chars = T::encode_str(text);
         quote::quote! { &[#(#chars),*] }
     }
 
     match ty {
-        WCharType::U16(_) => quote_str::<u16>(text),
-        WCharType::U32(_) => quote_str::<u32>(text),
-        WCharType::I16(_) => quote_str::<i16>(text),
-        WCharType::I32(_) => quote_str::<i32>(text),
+        Some(WCharType::U16(_)) => quote_str::<u16>(text),
+        Some(WCharType::U32(_)) => quote_str::<u32>(text),
+        Some(WCharType::I16(_)) => quote_str::<i16>(text),
+        Some(WCharType::I32(_)) => quote_str::<i32>(text),
+        None => quote_str::<libc::wchar_t>(text),
     }
 }
 
-pub fn expand_str_c(ty: WCharType, text: &str) -> TokenStream {
-    fn quote_str_c<T: Wide>(text: &str) -> TokenStream {
+pub fn expand_str_c(ty: Option<WCharType>, text: &str) -> TokenStream {
+    fn quote_str_c<T: Encode>(text: &str) -> TokenStream {
         let chars = T::encode_str_c(text);
         quote::quote! { &[#(#chars),*] }
     }
 
     match ty {
-        WCharType::U16(_) => quote_str_c::<u16>(text),
-        WCharType::U32(_) => quote_str_c::<u32>(text),
-        WCharType::I16(_) => quote_str_c::<i16>(text),
-        WCharType::I32(_) => quote_str_c::<i32>(text),
+        Some(WCharType::U16(_)) => quote_str_c::<u16>(text),
+        Some(WCharType::U32(_)) => quote_str_c::<u32>(text),
+        Some(WCharType::I16(_)) => quote_str_c::<i16>(text),
+        Some(WCharType::I32(_)) => quote_str_c::<i32>(text),
+        None => quote_str_c::<libc::wchar_t>(text),
     }
 }
 
-trait Wide: Copy + ToTokens {
+pub trait Encode: Copy + ToTokens {
+    fn wchar_type() -> WCharType;
+
     fn encode_char(c: char) -> Option<Self>;
 
     fn encode_str(s: &str) -> Vec<Self>;
@@ -65,7 +70,11 @@ trait Wide: Copy + ToTokens {
     fn encode_str_c(s: &str) -> Vec<Self>;
 }
 
-impl Wide for u16 {
+impl Encode for u16 {
+    fn wchar_type() -> WCharType {
+        syn::parse_quote!(u16)
+    }
+
     fn encode_char(c: char) -> Option<Self> {
         if c.len_utf16() == 1 {
             let mut buf = [0; 1];
@@ -85,7 +94,11 @@ impl Wide for u16 {
     }
 }
 
-impl Wide for u32 {
+impl Encode for u32 {
+    fn wchar_type() -> WCharType {
+        syn::parse_quote!(u32)
+    }
+
     fn encode_char(c: char) -> Option<Self> {
         Some(c as u32)
     }
@@ -99,7 +112,11 @@ impl Wide for u32 {
     }
 }
 
-impl Wide for i16 {
+impl Encode for i16 {
+    fn wchar_type() -> WCharType {
+        syn::parse_quote!(i16)
+    }
+
     fn encode_char(c: char) -> Option<Self> {
         u16::encode_char(c).map(|c| c as i16)
     }
@@ -113,7 +130,11 @@ impl Wide for i16 {
     }
 }
 
-impl Wide for i32 {
+impl Encode for i32 {
+    fn wchar_type() -> WCharType {
+        syn::parse_quote!(i32)
+    }
+
     fn encode_char(c: char) -> Option<Self> {
         Some(c as i32)
     }

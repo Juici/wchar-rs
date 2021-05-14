@@ -1,4 +1,4 @@
-error: expected one of: `u16`, `u32`, `i16`, `i32`
+error: expected one of: `u16`, `u32`, `i16`, `i32`, string literal
  --> $DIR/invalid_type_wchz.rs:3:36
   |
 3 | const INVALID_TYPE: &[f32] = wchz!(f32, "oops");

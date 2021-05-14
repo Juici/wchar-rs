@@ -7,8 +7,6 @@ edition = "2018"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
-build = "build.rs"
-
 repository = "https://github.com/Juici/wchar-rs"
 documentation = "https://docs.rs/wchar"
 
