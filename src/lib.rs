@@ -74,7 +74,7 @@ cfg_if::cfg_if! {
 ///
 /// The generated output takes the form of a slice of wide characters.
 ///
-/// The first argument is the output character type, if no type is specfied the
+/// The first argument is the output character type, if no type is specified the
 /// platform native `wchar_t` will be used.
 ///
 /// # Notes
@@ -129,7 +129,7 @@ macro_rules! wch {
 /// The generated output takes the form of a slice of wide characters, with a
 /// nul-terminator as the last wide character.
 ///
-/// The first argument is the output character type, if no type is specfied the
+/// The first argument is the output character type, if no type is specified the
 /// platform native `wchar_t` will be used.
 ///
 /// # Examples
@@ -174,7 +174,7 @@ macro_rules! wchz {
 ///
 /// The generated output takes the form of a slice of wide characters.
 ///
-/// The first argument is the output character type, if no type is specfied the
+/// The first argument is the output character type, if no type is specified the
 /// platform native `wchar_t` will be used.
 ///
 /// # Notes
@@ -182,16 +182,6 @@ macro_rules! wchz {
 /// Whilst this macro can be used for C-style nul-terminated wide strings, no
 /// validations are made about internal nul characters. If your strings need to
 /// be nul-terminated it is recommended to use [`include_wchz`].
-///
-/// # Examples
-///
-/// Basic usage (platform native):
-///
-/// ```
-/// # use wchar::{include_wch, wchar_t};
-/// const WIDE: &[wchar_t] = include_wch!("../README.md");
-/// ```
-#[cfg(feature = "nightly")]
 #[macro_export]
 macro_rules! include_wch {
     ($ty:ident, $string:literal) => {
@@ -209,18 +199,8 @@ macro_rules! include_wch {
 /// The generated output takes the form of a slice of wide characters, with a
 /// nul-terminator as the last wide character.
 ///
-/// The first argument is the output character type, if no type is specfied the
+/// The first argument is the output character type, if no type is specified the
 /// platform native `wchar_t` will be used.
-///
-/// # Examples
-///
-/// Basic usage (platform native):
-///
-/// ```
-/// # use wchar::{include_wchz, wchar_t};
-/// const WIDE: &[wchar_t] = include_wchz!("../README.md");
-/// ```
-#[cfg(feature = "nightly")]
 #[macro_export]
 macro_rules! include_wchz {
     ($ty:ident, $string:literal) => {

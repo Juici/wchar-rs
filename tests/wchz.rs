@@ -1,42 +1,36 @@
-use std::iter::once;
-
 use wchar::{wchar_t, wchz};
+
+mod util;
 
 macro_rules! test_wchz {
     ($s:literal) => {{
-        assert_eq!(
-            wchz!(u16, $s),
-            &*$s.encode_utf16().chain(once(0)).collect::<Vec<_>>()
-        );
-        assert_eq!(
-            wchz!(i16, $s),
-            &*$s.encode_utf16()
-                .map(|c| c as i16)
-                .chain(once(0))
-                .collect::<Vec<_>>()
-        );
-        assert_eq!(
-            wchz!(u32, $s),
-            &*$s.chars()
-                .map(|c| c as u32)
-                .chain(once(0))
-                .collect::<Vec<_>>()
-        );
-        assert_eq!(
-            wchz!(i32, $s),
-            &*$s.chars()
-                .map(|c| c as i32)
-                .chain(once(0))
-                .collect::<Vec<_>>()
-        );
+        use util::Wide;
+
+        let string = $s;
+
+        let v = wchz!(u16, $s);
+        assert_eq!(v, &*u16::encode_str_c(string));
+        assert_eq!(string, u16::decode_str_c(v.into_iter().copied()).unwrap());
+
+        let v = wchz!(u32, $s);
+        assert_eq!(v, &*u32::encode_str_c(string));
+        assert_eq!(string, u32::decode_str_c(v.into_iter().copied()).unwrap());
+
+        let v = wchz!(i16, $s);
+        assert_eq!(v, &*i16::encode_str_c(string));
+        assert_eq!(string, i16::decode_str_c(v.into_iter().copied()).unwrap());
+
+        let v = wchz!(i32, $s);
+        assert_eq!(v, &*i32::encode_str_c(string));
+        assert_eq!(string, i32::decode_str_c(v.into_iter().copied()).unwrap());
     }};
 }
 
 // Check we can use the macro to declare constants.
 const _: &[wchar_t] = wchz!("const");
 const _: &[u16] = wchz!(u16, "const");
-const _: &[i16] = wchz!(i16, "const");
 const _: &[u32] = wchz!(u32, "const");
+const _: &[i16] = wchz!(i16, "const");
 const _: &[i32] = wchz!(i32, "const");
 
 #[test]
@@ -51,6 +45,7 @@ fn complex() {
     test_wchz!("京");
     test_wchz!("٣");
     test_wchz!("و");
+    test_wchz!("𐐷");
 }
 
 #[test]

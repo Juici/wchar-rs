@@ -5,7 +5,7 @@ fn ui() {
     let t = trybuild::TestCases::new();
     t.compile_fail("tests/ui/*.rs");
 
-    if cfg!(feature = "nightly") {
+    if cfg!(feature = "unstable") {
         t.compile_fail("tests/ui_unstable/*.rs");
     }
 }

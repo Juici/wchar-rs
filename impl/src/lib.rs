@@ -1,83 +1,123 @@
-#![cfg_attr(feature = "nightly", feature(proc_macro_span))]
+#![cfg_attr(feature = "unstable", feature(proc_macro_span))]
 
 extern crate proc_macro;
 
-use crate::parse::Input;
+use std::fs;
+use std::path::PathBuf;
+
+use proc_macro2::{Span, TokenStream};
+use syn::{Error, Result};
+
+use crate::parse::{IncludeInput, LitStrOrChar, WchInput, WchzInput};
 
 mod encode;
 mod parse;
 
+// Utility function to handle expanding syn errors into a TokenStream.
+fn expand_macro<F: FnOnce() -> Result<TokenStream>>(f: F) -> proc_macro::TokenStream {
+    match f() {
+        Ok(expanded) => expanded.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
+
 #[proc_macro]
 pub fn wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let Input { ty, lit } = syn::parse_macro_input!(input);
+    let WchInput { ty, literal, .. } = syn::parse_macro_input!(input);
 
-    let text = lit.value();
-
-    encode::expand(ty, &text).into()
+    expand_macro(|| match literal {
+        LitStrOrChar::Str(lit) => Ok(encode::expand_str(ty, &lit.value())),
+        LitStrOrChar::Char(lit) => encode::expand_char(ty, lit),
+    })
 }
 
 #[proc_macro]
 pub fn wchz(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let Input { ty, lit } = syn::parse_macro_input!(input);
+    let WchzInput { ty, literal, .. } = syn::parse_macro_input!(input);
 
-    let text = lit.value();
-    if text.as_bytes().contains(&0) {
-        return syn::Error::new(lit.span(), "C-style string cannot contain nul characters")
-            .to_compile_error()
-            .into();
-    }
+    expand_macro(|| {
+        let text = literal.value();
+        if text.as_bytes().contains(&0) {
+            return Err(Error::new(
+                literal.span(),
+                "C-style string cannot contain nul characters",
+            ));
+        }
 
-    encode::expand_c(ty, &text).into()
+        Ok(encode::expand_str_c(ty, &text))
+    })
 }
 
-#[cfg(feature = "nightly")]
 #[proc_macro]
 pub fn include_wch(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let Input { ty, lit } = syn::parse_macro_input!(input);
+    let IncludeInput { ty, file_path, .. } = syn::parse_macro_input!(input);
 
-    let text = match read_file(&lit) {
-        Ok(text) => text,
-        Err(err) => return err,
-    };
+    expand_macro(|| {
+        let text = read_file(&file_path)?;
 
-    encode::expand(ty, &text).into()
+        Ok(encode::expand_str(ty, &text))
+    })
 }
 
-#[cfg(feature = "nightly")]
 #[proc_macro]
 pub fn include_wchz(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    let Input { ty, lit } = syn::parse_macro_input!(input);
+    let IncludeInput { ty, file_path, .. } = syn::parse_macro_input!(input);
 
-    let text = match read_file(&lit) {
-        Ok(text) => text,
-        Err(err) => return err,
-    };
+    expand_macro(|| {
+        let text = read_file(&file_path)?;
 
-    if text.as_bytes().contains(&0) {
-        return syn::Error::new(lit.span(), "C-style string cannot contain nul characters")
-            .to_compile_error()
-            .into();
-    }
+        if text.as_bytes().contains(&0) {
+            return Err(Error::new(
+                file_path.span(),
+                "C-style string cannot contain nul characters",
+            ));
+        }
 
-    encode::expand_c(ty, &text).into()
+        Ok(encode::expand_str_c(ty, &text))
+    })
 }
 
-#[cfg(feature = "nightly")]
-fn read_file(lit: &syn::LitStr) -> Result<String, proc_macro::TokenStream> {
-    let call_site = proc_macro::Span::call_site().source();
+fn read_file(path: &syn::LitStr) -> Result<String> {
+    let span = path.span();
+    let mut path = PathBuf::from(path.value());
+
+    // If the path is relative, resolve it relative source file directory.
+    if path.is_relative() {
+        // Get the directory containing the call site source file.
+        let mut dir = call_site_dir(span)?;
+
+        // Resolve path relative to dir.
+        dir.push(path);
+        path = dir;
+    }
+
+    match fs::read_to_string(&path) {
+        Ok(text) => Ok(text),
+        Err(err) => Err(Error::new(
+            span,
+            format_args!("couldn't read {}: {}", path.display(), err),
+        )),
+    }
+}
+
+// `Span::source()` and `Span::source_file()` are currently unstable.
+#[cfg(feature = "unstable")]
+fn call_site_dir(_span: Span) -> Result<PathBuf> {
+    let call_site = Span::call_site().unwrap().source();
     let source_file = call_site.source_file();
 
+    // The path to the source file.
     let mut path = source_file.path();
+    // The path to the directory containing the source file.
     path.pop();
-    path.push(lit.value());
 
-    match std::fs::read_to_string(&path) {
-        Ok(text) => Ok(text),
-        Err(err) => Err(syn::Error::new(
-            lit.span(),
-            format_args!("couldn't read {}: {}", path.display(), err),
-        )
-        .to_compile_error()
-        .into()),
-    }
+    Ok(path)
+}
+
+#[cfg(not(feature = "unstable"))]
+fn call_site_dir(span: Span) -> Result<PathBuf> {
+    Err(Error::new(
+        span,
+        "including files by relative path requires the `unstable` feature",
+    ))
 }
