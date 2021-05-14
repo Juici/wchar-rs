@@ -9,7 +9,7 @@ compiler time, like `L` string literals in C.
 
 ```toml
 [dependencies]
-wchar = "0.8"
+wchar = "0.10"
 ```
 
 *Compiler support: requires rustc 1.45+*
