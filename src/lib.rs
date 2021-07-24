@@ -17,9 +17,15 @@
 
 #![no_std]
 
+pub use wchar_impl;
+
 /// Platform wide character type.
 #[allow(non_camel_case_types)]
-pub type wchar_t = wchar_impl::wchar_t!();
+#[cfg(target_os = "windows")]
+pub type wchar_t = u16;
+#[allow(non_camel_case_types)]
+#[cfg(not(target_os = "windows"))]
+pub type wchar_t = i32;
 
 /// Generate a UTF-16 or UTF-32 wide string from a string literal.
 ///
@@ -62,7 +68,26 @@ pub type wchar_t = wchar_impl::wchar_t!();
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-pub use wchar_impl::wch;
+#[macro_export]
+#[cfg(target_os = "windows")]
+macro_rules! wch {
+    ($lit:literal) => {
+		$crate::wch!(u16, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::wch!($ty, $lit)
+    };
+}
+#[macro_export]
+#[cfg(not(target_os = "windows"))]
+macro_rules! wch {
+    ($lit:literal) => {
+		$crate::wch!(i32, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::wch!($ty, $lit)
+    };
+}
 
 /// Generate a C-style nul-terminated UTF-16 or UTF-32 wide string from a
 /// string literal.
@@ -103,7 +128,26 @@ pub use wchar_impl::wch;
 ///
 /// assert_eq!(wide_str, expected);
 /// ```
-pub use wchar_impl::wchz;
+#[macro_export]
+#[cfg(target_os = "windows")]
+macro_rules! wchz {
+    ($lit:literal) => {
+		$crate::wchz!(u16, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::wchz!($ty, $lit)
+    };
+}
+#[macro_export]
+#[cfg(not(target_os = "windows"))]
+macro_rules! wchz {
+    ($lit:literal) => {
+		$crate::wchz!(i32, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::wchz!($ty, $lit)
+    };
+}
 
 /// Generate a UTF-16 or UTF-32 wide string from a UTF-8 encoded file.
 ///
@@ -117,7 +161,26 @@ pub use wchar_impl::wchz;
 /// Whilst this macro can be used for C-style nul-terminated wide strings, no
 /// validations are made about internal nul characters. If your strings need to
 /// be nul-terminated it is recommended to use [`include_wchz`].
-pub use wchar_impl::include_wch;
+#[macro_export]
+#[cfg(target_os = "windows")]
+macro_rules! include_wch {
+    ($lit:literal) => {
+		$crate::include_wch!(u16, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::include_wch!($ty, $lit)
+    };
+}
+#[macro_export]
+#[cfg(not(target_os = "windows"))]
+macro_rules! include_wch {
+    ($lit:literal) => {
+		$crate::include_wch!(i32, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::include_wch!($ty, $lit)
+    };
+}
 
 /// Generate a UTF-16 or UTF-32 wide string from a UTF-8 encoded file.
 ///
@@ -128,4 +191,23 @@ pub use wchar_impl::include_wch;
 ///
 /// The first argument is the output character type, if no type is specified the
 /// platform native `wchar_t` will be used.
-pub use wchar_impl::include_wchz;
+#[macro_export]
+#[cfg(target_os = "windows")]
+macro_rules! include_wchz {
+    ($lit:literal) => {
+		$crate::include_wch!(u16, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::include_wchz!($ty, $lit)
+    };
+}
+#[macro_export]
+#[cfg(not(target_os = "windows"))]
+macro_rules! include_wchz {
+    ($lit:literal) => {
+		$crate::include_wchz!(i32, $lit)
+    };
+    ($ty:ty, $lit:literal) => {
+        $crate::wchar_impl::include_wchz!($ty, $lit)
+    };
+}
