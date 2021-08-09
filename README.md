@@ -12,7 +12,7 @@ compiler time, like `L` string literals in C.
 wchar = "0.10"
 ```
 
-*Compiler support: requires rustc 1.45+*
+*Compiler support: requires rustc 1.53+*
 
 ## Example
 
