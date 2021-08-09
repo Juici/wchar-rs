@@ -7,7 +7,7 @@ use syn::{Error, LitChar, Result};
 
 use crate::parse::WCharType;
 
-pub fn expand_char(ty: Option<WCharType>, c: LitChar) -> Result<TokenStream> {
+pub fn expand_char(ty: WCharType, c: LitChar) -> Result<TokenStream> {
     fn quote_char<T: Encode>(c: LitChar) -> Result<TokenStream> {
         match T::encode_char(c.value()) {
             Some(c) => Ok(quote::quote! { #c }),
@@ -22,41 +22,38 @@ pub fn expand_char(ty: Option<WCharType>, c: LitChar) -> Result<TokenStream> {
     }
 
     match ty {
-        Some(WCharType::U16(_)) => quote_char::<u16>(c),
-        Some(WCharType::U32(_)) => quote_char::<u32>(c),
-        Some(WCharType::I16(_)) => quote_char::<i16>(c),
-        Some(WCharType::I32(_)) => quote_char::<i32>(c),
-        None => quote_char::<libc::wchar_t>(c),
+        WCharType::U16(_) => quote_char::<u16>(c),
+        WCharType::U32(_) => quote_char::<u32>(c),
+        WCharType::I16(_) => quote_char::<i16>(c),
+        WCharType::I32(_) => quote_char::<i32>(c),
     }
 }
 
-pub fn expand_str(ty: Option<WCharType>, text: &str) -> TokenStream {
+pub fn expand_str(ty: WCharType, text: &str) -> TokenStream {
     fn quote_str<T: Encode>(text: &str) -> TokenStream {
         let chars = T::encode_str(text);
         quote::quote! { &[#(#chars),*] }
     }
 
     match ty {
-        Some(WCharType::U16(_)) => quote_str::<u16>(text),
-        Some(WCharType::U32(_)) => quote_str::<u32>(text),
-        Some(WCharType::I16(_)) => quote_str::<i16>(text),
-        Some(WCharType::I32(_)) => quote_str::<i32>(text),
-        None => quote_str::<libc::wchar_t>(text),
+        WCharType::U16(_) => quote_str::<u16>(text),
+        WCharType::U32(_) => quote_str::<u32>(text),
+        WCharType::I16(_) => quote_str::<i16>(text),
+        WCharType::I32(_) => quote_str::<i32>(text),
     }
 }
 
-pub fn expand_str_c(ty: Option<WCharType>, text: &str) -> TokenStream {
+pub fn expand_str_c(ty: WCharType, text: &str) -> TokenStream {
     fn quote_str_c<T: Encode>(text: &str) -> TokenStream {
         let chars = T::encode_str_c(text);
         quote::quote! { &[#(#chars),*] }
     }
 
     match ty {
-        Some(WCharType::U16(_)) => quote_str_c::<u16>(text),
-        Some(WCharType::U32(_)) => quote_str_c::<u32>(text),
-        Some(WCharType::I16(_)) => quote_str_c::<i16>(text),
-        Some(WCharType::I32(_)) => quote_str_c::<i32>(text),
-        None => quote_str_c::<libc::wchar_t>(text),
+        WCharType::U16(_) => quote_str_c::<u16>(text),
+        WCharType::U32(_) => quote_str_c::<u32>(text),
+        WCharType::I16(_) => quote_str_c::<i16>(text),
+        WCharType::I32(_) => quote_str_c::<i32>(text),
     }
 }
 

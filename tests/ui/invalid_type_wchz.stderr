@@ -1,5 +1,7 @@
-error: expected one of: `u16`, `u32`, `i16`, `i32`, string literal
- --> $DIR/invalid_type_wchz.rs:3:36
+error: expected one of: `u16`, `u32`, `i16`, `i32`
+ --> $DIR/invalid_type_wchz.rs:3:30
   |
 3 | const INVALID_TYPE: &[f32] = wchz!(f32, "oops");
-  |                                    ^^^
+  |                              ^^^^^^^^^^^^^^^^^^
+  |
+  = note: this error originates in the macro `wchz` (in Nightly builds, run with -Z macro-backtrace for more info)

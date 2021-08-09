@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::ToTokens;
-use syn::parse::{Lookahead1, Parse, ParseStream, Result};
+use syn::parse::{Parse, ParseStream, Result};
 use syn::{LitChar, LitStr, Token};
 
 mod kw {
@@ -15,15 +15,6 @@ pub enum WCharType {
     U32(kw::u32),
     I16(kw::i16),
     I32(kw::i32),
-}
-
-impl WCharType {
-    fn peek(lookahead: &Lookahead1) -> bool {
-        lookahead.peek(kw::u16)
-            || lookahead.peek(kw::u32)
-            || lookahead.peek(kw::i16)
-            || lookahead.peek(kw::i32)
-    }
 }
 
 impl Parse for WCharType {
@@ -73,69 +64,48 @@ impl Parse for LitStrOrChar {
 }
 
 pub struct WchInput {
-    pub ty: Option<(WCharType, Token![,])>,
+    pub ty: WCharType,
+    pub comma: Token![,],
     pub literal: LitStrOrChar,
 }
 
 impl Parse for WchInput {
     fn parse(input: ParseStream) -> Result<Self> {
-        let lookahead = input.lookahead1();
-        let ty = if WCharType::peek(&lookahead) {
-            Some((input.parse()?, input.parse()?))
-        } else if lookahead.peek(LitStr) || lookahead.peek(LitChar) {
-            None
-        } else {
-            return Err(lookahead.error());
-        };
-
         Ok(WchInput {
-            ty,
+            ty: input.parse()?,
+            comma: input.parse()?,
             literal: input.parse()?,
         })
     }
 }
 
 pub struct WchzInput {
-    pub ty: Option<(WCharType, Token![,])>,
+    pub ty: WCharType,
+    pub comma: Token![,],
     pub literal: LitStr,
 }
 
 impl Parse for WchzInput {
     fn parse(input: ParseStream) -> Result<Self> {
-        let lookahead = input.lookahead1();
-        let ty = if WCharType::peek(&lookahead) {
-            Some((input.parse()?, input.parse()?))
-        } else if lookahead.peek(LitStr) {
-            None
-        } else {
-            return Err(lookahead.error());
-        };
-
         Ok(WchzInput {
-            ty,
+            ty: input.parse()?,
+            comma: input.parse()?,
             literal: input.parse()?,
         })
     }
 }
 
 pub struct IncludeInput {
-    pub ty: Option<(WCharType, Token![,])>,
+    pub ty: WCharType,
+    pub comma: Token![,],
     pub file_path: LitStr,
 }
 
 impl Parse for IncludeInput {
     fn parse(input: ParseStream) -> Result<Self> {
-        let lookahead = input.lookahead1();
-        let ty = if WCharType::peek(&lookahead) {
-            Some((input.parse()?, input.parse()?))
-        } else if lookahead.peek(LitStr) {
-            None
-        } else {
-            return Err(lookahead.error());
-        };
-
         Ok(IncludeInput {
-            ty,
+            ty: input.parse()?,
+            comma: input.parse()?,
             file_path: input.parse()?,
         })
     }
