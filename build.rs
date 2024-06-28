@@ -102,15 +102,15 @@ impl Cfg {
     }
 
     fn unix(&self) -> bool {
-        self.family() == Some(family::unix)
+        self.family().any(|family| family::unix == family)
     }
 
     fn windows(&self) -> bool {
-        self.family() == Some(family::windows)
+        self.family().any(|family| family::windows == family)
     }
 
-    fn family(&self) -> Option<&str> {
-        self.cfg("target_family")
+    fn family(&self) -> impl Iterator<Item = &str> {
+        self.cfg("target_family").unwrap_or_default().split(',')
     }
 
     fn os(&self) -> Option<&str> {
